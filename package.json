@@ -1,4 +1,6 @@
 {
+  "name": "hcproduct-switchboard-mockup",
+  "version": "1.0.0",
   "dependencies": {
     "@supabase/supabase-js": "^2.45.2",
     "csv-parse": "^5.5.6",
