@@ -1,1 +1,1 @@
-//TODO: For now I am using the default Appsmith and Supabase.Storage API to put API data file
+//TODO: For now I am using the default Appsmith Table and Supabase.Database API to manage API

@@ -1,1 +1,1 @@
-//TODO: For now I am using the default Appsmith Filepicker and Supabase.Database API to manage APi
+//TODO: For now I am using the default Appsmith Filepicker and Supabase.Storage API to put API data file

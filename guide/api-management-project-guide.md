@@ -1,4 +1,4 @@
-# API Management System Project Guide
+# API Management System Project Guide With NodeJS Back-end
 
 ## Table of Contents
 
@@ -64,10 +64,10 @@ api-management-system/
 4. Create a `.env` file in the root directory:
 
    ```
+   SUPABASE_URL=your_supabase_project_url
    PORT=3000
    # ANON KEY
-   SUPABASE_KEY
-   SUPABASE_URL=your_supabase_project_url
+   SUPABASE_ANON_KEY=our_supabase_anon_key
    # SERVICE_KEY IS SECRET. DO NOT SHARE OR EXPOSED.
    SUPABASE_SERVICE_KEY=your_supabase_service_key
    ```
@@ -82,48 +82,50 @@ Create `src/app.js`:
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { createClient } = require("@supabase/supabase-js");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+// For now I use Appsmith & Supabase API to manage API
+// const { createClient } = require("@supabase/supabase-js");
 
-// Middleware to verify JWT token for API Management routes
-const verifyToken = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ error: "No token provided" });
-  }
+// const supabase = createClient(
+//   process.env.SUPABASE_URL,
+//   process.env.SUPABASE_SERVICE_KEY
+// );
 
-  try {
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser(token);
-    if (error) throw error;
-    req.user = user;
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: "Invalid token" });
-  }
-};
+// // Middleware to verify JWT token for API Management routes
+// const verifyToken = async (req, res, next) => {
+//   const token = req.headers.authorization?.split(" ")[1];
+//   if (!token) {
+//     return res.status(401).json({ error: "No token provided" });
+//   }
 
-// API Management routes (protected)
-app.use(
-  "/v1/api/manage/:tenantId",
-  verifyToken,
-  require("./routes/apiManagement")
-);
+//   try {
+//     const {
+//       data: { user },
+//       error,
+//     } = await supabase.auth.getUser(token);
+//     if (error) throw error;
+//     req.user = user;
+//     next();
+//   } catch (error) {
+//     return res.status(401).json({ error: "Invalid token" });
+//   }
+// };
+
+// // API Management routes (protected)
+// app.use(
+//   "/v1/api/manage/:tenantId",
+//   verifyToken,
+//   require("./routes/apiManagement")
+// );
 
 // API Usage routes (public, uses API key)
 app.use(
-  "/v1/api/use/:tenantId/:endpointName/:operation",
-  require("./routes/apiUsage")
+    "/v1/api/use",
+    require("./routes/apiUsage")
 );
 
 const PORT = process.env.PORT || 3000;
@@ -131,6 +133,8 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 ```
 
 ### API Management Module
+### I do not use apiManagement.js 
+### For now I am using the default Appsmith Table and Supabase.Database API to manage API
 
 Create `src/routes/apiManagement.js`:
 
@@ -271,7 +275,8 @@ module.exports = router;
 ```
 
 ### Data Processing and Storage
-
+### I do not use dataPorcessing.js
+### For now I am using the default Appsmith Filepicker and Supabase.Storage API to put API data file
 Create `src/services/dataProcessing.js`:
 
 ```javascript
@@ -319,7 +324,10 @@ async function processUploadedFile(file, apiId) {
   // Store processed data in Supabase Storage
   const { data, error } = await supabase.storage
     .from("api-data")
-    .upload(`${apiId}/data.json`, JSON.stringify(results));
+    .upload(`${apiId}/data.json`, JSON.stringify(results), {
+      upsert: true,
+      // upsert mean if the file exists, replace it
+    });
 
   if (error) throw error;
   return results;
@@ -367,7 +375,8 @@ async function processQuery(apiId, operation, queryParams) {
   if (operation !== "search") throw new Error("Unknown operation");
 
   // Fetch data from Supabase Storage
-  const { data, error } = await supabaseService.storage
+  const { data, error } = await supabaseService
+    .storage
     .from("api-data")
     .download(`${apiId}/data.json`);
 
@@ -423,7 +432,7 @@ async function logApiCall(tenantName, endpointName, apiId, request, response) {
       headers: request.headers,
       body: request.body,
       operation: request.params.operation,
-      query: request.query,
+      query: request.query
     },
     response: {
       statusCode: response.statusCode,
@@ -431,7 +440,8 @@ async function logApiCall(tenantName, endpointName, apiId, request, response) {
     },
   };
 
-  const { error } = await supabaseService.storage
+  const { error } = await supabaseService
+    .storage
     .from("api-logs")
     .upload(`${apiId}/${logEntry.timestamp}.json`, JSON.stringify(logEntry));
 
@@ -447,37 +457,58 @@ module.exports = { logApiCall };
 2. Set up Authentication for user login
 3. Create the following tables in PostgreSQL:
 
-   **apis table:**
-
-   ```sql
-   CREATE TABLE apis (
-     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-     tenant_id TEXT,
-     tenant_nane TEXT NOT NULL,
-     endpoint_name TEXT NOT NULL,
-     method TEXT NOT NULL,
-     api_key TEXT NOT NULL,
-     status TEXT NOT NULL,
-     request_quota TEXT,
-     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-   );
-   ```
+  **apis table:**
+  ```sql
+  CREATE TABLE apis (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    tenant_id TEXT,
+    tenant_naMe TEXT NOT NULL,
+    endpoint_name TEXT NOT NULL,
+    method TEXT NOT NULL,
+    api_key TEXT NOT NULL,
+    status TEXT NOT NULL,
+    request_quota TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+  );
+  ```
 
 4. Add row-level security (RLS) policy for the `apis` table:
 
-   ```sql
-   -- Enable RLS on the apis table
-   ALTER TABLE apis ENABLE ROW LEVEL SECURITY;
+  ```sql
+  -- for clause: SELECT
+  -- Create a policy that allows users to see only their own tenant's APIs
+  alter policy "Enable select APIs for users based on email"
+  on "public"."apis"
+  to authenticated
+  using (
+    ((( SELECT auth.jwt() AS jwt) ->> 'email'::text) = tenant_id)
+  );
+  ```
 
-   -- Create a policy that allows users to see only their own tenant's APIs
-   CREATE POLICY tenant_isolation_policy ON apis
-     FOR ALL
-     USING (auth.uid() IN (
-       SELECT id FROM auth.users
-       WHERE user_metadata->>'tenant_id' = tenant_id
-     ));
-   ```
+  ```sql 
+  -- for clause: UPDATE
+  -- Create a policy that allows users to update only their own tenant's APIs
+  alter policy "Enable update APIs for users based on email"
+  on "public"."apis"
+  to authenticated
+  using (
+    ((( SELECT auth.jwt() AS jwt) ->> 'email'::text) = tenant_id)
+  with check (
+    ((( SELECT auth.jwt() AS jwt) ->> 'email'::text) = tenant_id)
+  );
+  ```
+
+  ```sql 
+  -- for clause: INSERT
+  -- Create a policy that allows logined (authenticated) users to add new APIs
+  alter policy "Enable insert for authenticated users only"
+  on "public"."apis"
+  to authenticated
+  with check (
+    true
+  );
+  ```
 
    This policy ensures that users can only access APIs belonging to their own tenant.
 
@@ -505,9 +536,10 @@ const getUserSupabase = (jwt) =>
   });
 
 // Client with service role (use cautiously, bypasses RLS)
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
 
-module.exports = { supabaseAnon, getUserSupabase, supabaseAdmin };
+// Note that supabaseAnon, supabaseService is already client instances
+module.exports = { supabaseAnon, getUserSupabase, supabaseService };
 ```
 
 ## Appsmith Frontend
@@ -515,164 +547,19 @@ module.exports = { supabaseAnon, getUserSupabase, supabaseAdmin };
 Create the following pages and components in Appsmith:
 Video for reference on login: https://www.youtube.com/watch?v=mfhHUDNCkoQ&t=211s
 Note that: the Appsmith app needs to be public, meaning no appsmith defaul login. If not, users have to login to the app (appsmith) then login to their service (supabase)
+In addition, in embeded mode (the Appsmith app in a html iframe), Google Login doesnot work
 
-1. **Login Page:**
+For API calls to your backend from Appsmith, mostly include the auth token in the headers, using Anon key and Logined (Authenticated) User JWT token:
 
-   - Email and password input fields
-   - Login button connected to Supabase Auth
-   - Sign-up button for new users
-
-   Example login logic:
-
-   ```javascript
-   const login = async () => {
-     const { user, error } = await supabase.auth.signIn({
-       email: emailInput.value,
-       password: passwordInput.value,
-     });
-
-     if (error) {
-       showAlert("Login failed: " + error.message);
-     } else {
-       storeValue("authToken", user.session.access_token);
-       navigateTo("Dashboard");
-     }
-   };
-   ```
-
-2. **Sign-up Page:**
-
-   - Email and password input fields
-   - Additional fields for user information (e.g., name, company)
-   - Sign-up button that creates a new user in Supabase Auth
-
-   Example sign-up logic:
-
-   ```javascript
-   const signUp = async () => {
-     const { user, error } = await supabase.auth.signUp({
-       email: emailInput.value,
-       password: passwordInput.value,
-       options: {
-         data: {
-           name: nameInput.value,
-           company: companyInput.value,
-           tenant_id: generateTenantId(), // Implement this function
-         },
-       },
-     });
-
-     if (error) {
-       showAlert("Sign-up failed: " + error.message);
-     } else {
-       showAlert(
-         "Sign-up successful. Please check your email for verification."
-       );
-     }
-   };
-   ```
-
-3. **API Dashboard:**
-
-   - Table listing all APIs for the logged-in tenant
-   - "Create New API" button
-
-   Example API listing:
-
-   ```javascript
-   const fetchAPIs = async () => {
-     const { data, error } = await supabase
-       .from("apis")
-       .select("*")
-       .eq("tenant_id", appsmith.store.user.tenant_id);
-
-     if (error) {
-       showAlert("Failed to fetch APIs: " + error.message);
-     } else {
-       storeValue("apis", data);
-     }
-   };
-   ```
-
-4. **Create API Form:**
-
-   - Input fields for endpoint name and method
-   - File upload for CSV/Excel
-   - Submit button to create the API
-
-   Example API creation:
-
-   ```javascript
-   const createAPI = async () => {
-     const response = await createAPIEndpoint.run({
-       endpointName: endpointNameInput.value,
-       method: methodSelect.selectedOptionValue,
-       file: fileUpload.files[0],
-     });
-
-     if (response.error) {
-       showAlert("Failed to create API: " + response.error);
-     } else {
-       showAlert("API created successfully");
-       fetchAPIs(); // Refresh the API list
-     }
-   };
-   ```
-
-5. **API Management:**
-
-   - Start/Stop/Delete buttons for each API
-   - Display API key
-
-   Example API management actions:
-
-   ```javascript
-   const updateAPIStatus = async (apiId, action) => {
-     const response = await updateAPIEndpoint.run({
-       apiId: apiId,
-       action: action,
-     });
-
-     if (response.error) {
-       showAlert(`Failed to ${action} API: ` + response.error);
-     } else {
-       showAlert(`API ${action} successfully`);
-       fetchAPIs(); // Refresh the API list
-     }
-   };
-   ```
-
-6. **API Monitoring:**
-
-   - Real-time log display
-   - API usage metrics (requests per minute, total requests, etc.)
-
-   Example log fetching:
-
-   ```javascript
-   const fetchAPILogs = async (apiId) => {
-     const response = await fetchLogsEndpoint.run({ apiId: apiId });
-
-     if (response.error) {
-       showAlert("Failed to fetch logs: " + response.error);
-     } else {
-       storeValue("apiLogs", response.logs);
-       storeValue("apiMetrics", response.metrics);
-     }
-   };
-   ```
-
-For all API calls to your backend from Appsmith, include the auth token in the headers:
-
-```javascript
-{
-  "Authorization": "Bearer " + appsmith.store.authToken
-}
+```curl
+curl 'https://YOU_SUPABASE_PROJECT_ID.supabase.co' \
+-H "apikey: SUPABASE_CLIENT_API_KEY"
+-H "Authorization: Bearer USER_JWT_TOKEN"
+<!-- USER_JWT_TOKEN or access token is fetched after login and stored in appsmith app local storage. Fetched using {{appsmith.store.access_token}} -->
 ```
 
-Connect these components to your Express.js backend using Appsmith's API integration features. Create the necessary API endpoints in Appsmith to communicate with your backend server.
+Since I am too lazy to list out all the implementation here, good luck then, until we need to build our own web-app.
 
-Remember to implement proper error handling and loading states for a better user experience.
 
 ## Development and Deployment
 
