@@ -578,7 +578,3 @@ Since I am too lazy to list out all the implementation here, good luck then, unt
 5. Publish your Appsmith application.
 
 Remember to secure your application by implementing proper input validation throughout the system. Also, consider implementing rate limiting and more advanced monitoring features as your system grows.
-
-## Conclusion
-
-This guide provides a comprehensive setup for an API Management System using Express.js, Supabase, and Appsmith. It covers authentication, API creation, management, and usage tracking. As you develop your system, you may need to expand on these basics to meet specific requirements or add more advanced features.
