@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "start": "node src-nodejs/app.js",
+    "dev": "nodemon src-nodejs/app.js"
   },
   "keywords": [],
   "author": "Harry Bao Corn",
