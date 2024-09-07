@@ -6,9 +6,7 @@
 2. [Setup and Installation](#setup-and-installation)
 3. [Backend Implementation](#backend-implementation)
    - [Server Setup](#server-setup)
-   - [API Management Module](#api-management-module)
    - [API Usage Module](#api-usage-module)
-   - [Data Processing and Storage](#data-processing-and-storage)
    - [Query Processing](#query-processing)
    - [Logging and Monitoring](#logging-and-monitoring)
 4. [Supabase Setup](#supabase-setup)
@@ -22,10 +20,8 @@ api-management-system/
 ├── src/
 │   ├── app.js
 │   ├── routes/
-│   │   ├── apiManagement.js
 │   │   └── apiUsage.js
 │   ├── services/
-│   │   ├── dataProcessing.js
 │   │   ├── queryProcessing.js
 │   │   └── logging.js
 │   └── config/
@@ -87,41 +83,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// For now I use Appsmith & Supabase API to manage API
-// const { createClient } = require("@supabase/supabase-js");
-
-// const supabase = createClient(
-//   process.env.SUPABASE_URL,
-//   process.env.SUPABASE_SERVICE_KEY
-// );
-
-// // Middleware to verify JWT token for API Management routes
-// const verifyToken = async (req, res, next) => {
-//   const token = req.headers.authorization?.split(" ")[1];
-//   if (!token) {
-//     return res.status(401).json({ error: "No token provided" });
-//   }
-
-//   try {
-//     const {
-//       data: { user },
-//       error,
-//     } = await supabase.auth.getUser(token);
-//     if (error) throw error;
-//     req.user = user;
-//     next();
-//   } catch (error) {
-//     return res.status(401).json({ error: "Invalid token" });
-//   }
-// };
-
-// // API Management routes (protected)
-// app.use(
-//   "/v1/api/manage/:tenantId",
-//   verifyToken,
-//   require("./routes/apiManagement")
-// );
-
 // API Usage routes (public, uses API key)
 app.use(
     "/v1/api/use",
@@ -130,98 +91,6 @@ app.use(
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-```
-
-### API Management Module
-### I do not use apiManagement.js 
-### For now I am using the default Appsmith Table and Supabase.Database API to manage API
-
-Create `src/routes/apiManagement.js`:
-
-```javascript
-const express = require("express");
-const router = express.Router();
-const { createClient } = require("@supabase/supabase-js");
-
-// Create a new Supabase client for each request using the user's JWT
-const getSupabase = (req) =>
-  createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY, {
-    global: { headers: { Authorization: req.headers.authorization } },
-  });
-
-// List APIs
-router.get("/list", async (req, res) => {
-  const { tenantId } = req.params;
-  const supabase = getSupabase(req);
-
-  const { data, error } = await supabase
-    .from("apis")
-    .select("*")
-    .eq("tenant_id", tenantId);
-
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
-});
-
-// Create API
-router.post("/create", async (req, res) => {
-  const { tenantId } = req.params;
-  const { endpointName, method } = req.body;
-  const apiKey = generateApiKey(); // Implement this function
-  const supabase = getSupabase(req);
-
-  const { data, error } = await supabase.from("apis").insert({
-    tenant_id: tenantId,
-    endpoint_name: endpointName,
-    method,
-    api_key: apiKey,
-    status: "active",
-  });
-
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
-});
-
-// Start/Stop/Delete API
-router.post("/:action", async (req, res) => {
-  const { tenantId, action } = req.params;
-  const { apiId } = req.body;
-  const supabase = getSupabase(req);
-
-  let newStatus;
-  switch (action) {
-    case "start":
-      newStatus = "active";
-      break;
-    case "stop":
-      newStatus = "inactive";
-      break;
-    case "delete":
-      newStatus = "deleted";
-      break;
-    default:
-      return res.status(400).json({ error: "Invalid action" });
-  }
-
-  const { data, error } = await supabase
-    .from("apis")
-    .update({ status: newStatus })
-    .match({ id: apiId, tenant_id: tenantId });
-
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
-});
-
-// Monitor API
-router.get("/monitor/:apiId", async (req, res) => {
-  const { tenantId, apiId } = req.params;
-  const supabase = getSupabase(req);
-  // Implement log fetching from Supabase Storage
-  // Implement metrics calculation
-  res.json({ logs: [], metrics: {} }); // Placeholder
-});
-
-module.exports = router;
 ```
 
 ### API Usage Module
@@ -272,68 +141,6 @@ router.all("/:tenantName/:endpointName/:operation", async (req, res) => {
 });
 
 module.exports = router;
-```
-
-### Data Processing and Storage
-### I do not use dataPorcessing.js
-### For now I am using the default Appsmith Filepicker and Supabase.Storage API to put API data file
-Create `src/services/dataProcessing.js`:
-
-```javascript
-const csv = require("csv-parser");
-const Excel = require("exceljs");
-const { Readable } = require("stream");
-const { createClient } = require("@supabase/supabase-js");
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
-
-async function processUploadedFile(file, apiId) {
-  const results = [];
-  const stream = Readable.from(file.buffer);
-
-  if (file.mimetype === "text/csv") {
-    await new Promise((resolve, reject) => {
-      stream
-        .pipe(csv())
-        .on("data", (data) => results.push(data))
-        .on("end", resolve)
-        .on("error", reject);
-    });
-  } else if (
-    file.mimetype ===
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  ) {
-    const workbook = new Excel.Workbook();
-    await workbook.xlsx.read(stream);
-    const worksheet = workbook.getWorksheet(1);
-    worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-      if (rowNumber > 1) {
-        // Assuming first row is headers
-        const rowData = {};
-        row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-          rowData[worksheet.getRow(1).getCell(colNumber).value] = cell.value;
-        });
-        results.push(rowData);
-      }
-    });
-  }
-
-  // Store processed data in Supabase Storage
-  const { data, error } = await supabase.storage
-    .from("api-data")
-    .upload(`${apiId}/data.json`, JSON.stringify(results), {
-      upsert: true,
-      // upsert mean if the file exists, replace it
-    });
-
-  if (error) throw error;
-  return results;
-}
-
-module.exports = { processUploadedFile };
 ```
 
 ### Query Processing
