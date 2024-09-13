@@ -1,222 +1,175 @@
-// Remove Oak imports
-// import { Application, Router } from "https://deno.land/x/oak@v17.0.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.3";
+const { createClient } = require('@supabase/supabase-js');
 
+// CORS headers for all responses
 const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers":
-        "authorization, x-client-info, apikey, content-type, x-api-key",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
 };
 
-// Your helper functions (parseQuery, processQuery, logApiCall) can remain largely the same.
-
-// Adjust parseQuery if needed
-function parseQuery(queryParams: URLSearchParams) {
-    const query: Record<string, { [key: string]: string | number; }> = {};
-
-    for (const [key, value] of queryParams.entries()) {
-        if (value.startsWith("!")) {
-            query[key] = { "!=": value.slice(1) };
-        } else if (value.startsWith(">=")) {
-            query[key] = { ">=": parseFloat(value.slice(2)) };
-        } else if (value.startsWith("<=")) {
-            query[key] = { "<=": parseFloat(value.slice(2)) };
-        } else if (value.startsWith(">")) {
-            query[key] = { ">": parseFloat(value.slice(1)) };
-        } else if (value.startsWith("<")) {
-            query[key] = { "<": parseFloat(value.slice(1)) };
+// Helper function to parse query parameters
+function parseQuery(queryParams) {
+    const query = {};
+    for (const [key, value] of Object.entries(queryParams)) {
+        if (value.startsWith('!')) {
+            query[key] = { '!=': value.slice(1) };
+        } else if (value.startsWith('>=')) {
+            query[key] = { '>=': parseFloat(value.slice(2)) };
+        } else if (value.startsWith('<=')) {
+            query[key] = { '<=': parseFloat(value.slice(2)) };
+        } else if (value.startsWith('>')) {
+            query[key] = { '>': parseFloat(value.slice(1)) };
+        } else if (value.startsWith('<')) {
+            query[key] = { '<': parseFloat(value.slice(1)) };
         } else {
-            query[key] = { "=": value };
+            query[key] = { '=': value };
         }
     }
-
     return query;
 }
 
-async function processQuery(
-    supabase: any,
-    apiId: string,
-    operation: string,
-    queryParams: URLSearchParams,
-) {
-    const parsedQuery = parseQuery(queryParams);
+// Process the query against the API data
+async function processQuery(supabase, apiId, operation, queryParams) {
+    if (operation !== 'search') throw new Error('Unknown operation');
 
-    if (operation !== "search") throw new Error("Unknown operation");
-
-    // Fetch data from Supabase Storage
-    const { data, error } = await supabase
-        .storage
-        .from("api-data")
-        .download(`${apiId}/data.json`);
-
-    if (error) throw new Error("Failed to fetch API data");
+    const { data, error } = await supabase.storage.from('api-data').download(`${apiId}/data.json`);
+    if (error) throw new Error('Failed to fetch API data');
 
     const jsonData = JSON.parse(await data.text());
+    const parsedQuery = parseQuery(queryParams);
 
-    // Apply query filters
-    const filteredData = jsonData.filter((item: any) => {
-        return Object.entries(parsedQuery).every(([key, condition]) => {
+    return jsonData.filter((item) =>
+        Object.entries(parsedQuery).every(([key, condition]) => {
             const [operator, value] = Object.entries(condition)[0];
             switch (operator) {
-                case "=":
-                    return item[key] == value;
-                case "!=":
-                    return item[key] != value;
-                case ">":
-                    return item[key] > value;
-                case "<":
-                    return item[key] < value;
-                case ">=":
-                    return item[key] >= value;
-                case "<=":
-                    return item[key] <= value;
-                default:
-                    return true;
+                case '=': return item[key] == value;
+                case '!=': return item[key] != value;
+                case '>': return item[key] > value;
+                case '<': return item[key] < value;
+                case '>=': return item[key] >= value;
+                case '<=': return item[key] <= value;
+                default: return true;
             }
-        });
-    });
-
-    return filteredData;
+        })
+    );
 }
 
-async function logApiCall(
-    supabase: any,
-    tenantName: string,
-    endpointName: string,
-    apiId: string,
-    request: Request,
-    response: { status: number; body: any; },
-) {
+// Log API call details
+async function logApiCall(supabase, tenantName, endpointName, apiId, request, response) {
     const logEntry = {
         timestamp: new Date().toISOString(),
         tenantName,
         endpointName,
         apiId,
         request: {
-            method: request.method,
-            url: request.url,
-            headers: Object.fromEntries(request.headers),
+            method: request.httpMethod,
+            url: request.path,
+            headers: request.headers,
         },
         response: {
-            status: response.status,
+            status: response.statusCode,
             body: response.body,
         },
     };
 
-    const { error } = await supabase
-        .storage
-        .from("api-logs")
+    const { error } = await supabase.storage
+        .from('api-logs')
         .upload(`${apiId}/${logEntry.timestamp}.json`, JSON.stringify(logEntry), {
-            contentType: "application/json",
+            contentType: 'application/json',
         });
 
-    if (error) console.error("Error logging API call:", error);
+    if (error) console.error('Error logging API call:', error);
 }
 
-serve(async (req: Request) => {
-    // Handle CORS preflight requests
-    if (req.method === "OPTIONS") {
-        return new Response(null, {
-            headers: corsHeaders,
-        });
+// Main Lambda handler
+exports.handler = async (event, context) => {
+    console.log('Received event:', JSON.stringify(event, null, 2));
+
+    // Handle preflight requests
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers: corsHeaders, body: null };
     }
 
     try {
-        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-        const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        const supabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY
+        );
 
-        const url = new URL(req.url);
-        const pathname = url.pathname;
+        // Parse path parameters
+        const pathSegments = (event.pathParameters?.proxy || event.path || event.resource || '')
+            .split('/')
+            .filter(Boolean);
 
-        // Remove the function name from the path
-        const functionName = "api-usage"; // Or Deno.env.get('FUNCTION_NAME') if you have it set
-        const functionPath = `/${functionName}`;
-        let pathAfterFunction = pathname;
+        const [v1, apiSegment, useSegment, tenantName, endpointName, operation] = pathSegments;
 
-        if (pathname.startsWith(functionPath)) {
-            pathAfterFunction = pathname.slice(functionPath.length);
-        }
-        const pathSegments = pathAfterFunction.split("/").filter(Boolean);
-        // Expected path: /v1/api/use/:tenantName/:endpointName/:operation
-        const [v1, apiSegment, useSegment, tenantName, endpointName, operation] =
-            pathSegments;
-
-        if (v1 !== "v1" || apiSegment !== "api" || useSegment !== "use") {
-            return new Response(JSON.stringify({ error: "Invalid endpoint" }), {
-                status: 404,
-                headers: corsHeaders,
-            });
+        if (v1 !== 'v1' || apiSegment !== 'api' || useSegment !== 'use') {
+            return {
+                statusCode: 404,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ error: 'Invalid endpoint' }),
+            };
         }
 
-        const apiKey = req.headers.get("x-api-key");
-
+        const apiKey = event.headers['x-api-key'] || event.headers['X-Api-Key'];
         if (!apiKey) {
-            return new Response(JSON.stringify({ error: "API key is missing" }), {
-                status: 401,
-                headers: corsHeaders,
-            });
+            return {
+                statusCode: 401,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ error: 'API key is missing' }),
+            };
         }
 
-        // Verify tenant_name, endpoint_name, API key and status
+        // Verify API details
         const { data: api, error: apiError } = await supabase
-            .from("apis")
-            .select("*")
-            .eq("tenant_name", tenantName)
-            .eq("endpoint_name", endpointName)
-            .eq("api_key", apiKey)
+            .from('apis')
+            .select('*')
+            .eq('tenant_name', tenantName)
+            .eq('endpoint_name', endpointName)
+            .eq('api_key', apiKey)
             .single();
 
-        if (apiError || !api || api.status !== "active") {
-            return new Response(
-                JSON.stringify({ error: "Invalid or inactive API" }),
-                {
-                    status: 403,
-                    headers: corsHeaders,
-                },
-            );
+        if (apiError || !api || api.status !== 'active') {
+            return {
+                statusCode: 403,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ error: 'Invalid or inactive API' }),
+            };
         }
 
-        if (api.method.toUpperCase() !== req.method) {
-            return new Response(
-                JSON.stringify({ error: "Method not allowed for this API" }),
-                {
-                    status: 405,
-                    headers: corsHeaders,
-                },
-            );
+        if (api.method.toUpperCase() !== event.httpMethod) {
+            return {
+                statusCode: 405,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ error: 'Method not allowed for this API' }),
+            };
         }
 
-        // Process the request
+        // Process query and prepare response
         const queryResult = await processQuery(
             supabase,
             api.id,
             operation,
-            url.searchParams,
+            event.queryStringParameters || {}
         );
 
-        await logApiCall(supabase, tenantName, endpointName, api.id, req, {
-            status: 200,
-            body: queryResult,
-        });
+        const response = {
+            statusCode: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            body: JSON.stringify(queryResult),
+        };
 
-        return new Response(JSON.stringify(queryResult), {
-            headers: {
-                ...corsHeaders,
-                "Content-Type": "application/json",
-            },
-        });
+        // Log API call
+        await logApiCall(supabase, tenantName, endpointName, api.id, event, response);
+
+        return response;
     } catch (error) {
-        console.error("Error processing request:", error);
+        console.error('Error processing request:', error);
 
-        return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: {
-                ...corsHeaders,
-                "Content-Type": "application/json",
-            },
-        });
+        return {
+            statusCode: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ error: error.message }),
+        };
     }
-});
+};
