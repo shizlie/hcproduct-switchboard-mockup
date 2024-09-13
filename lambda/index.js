@@ -11,18 +11,19 @@ const corsHeaders = {
 function parseQuery(queryParams) {
     const query = {};
     for (const [key, value] of Object.entries(queryParams)) {
-        if (value.startsWith('!')) {
-            query[key] = { '!=': value.slice(1) };
-        } else if (value.startsWith('>=')) {
-            query[key] = { '>=': parseFloat(value.slice(2)) };
-        } else if (value.startsWith('<=')) {
-            query[key] = { '<=': parseFloat(value.slice(2)) };
-        } else if (value.startsWith('>')) {
-            query[key] = { '>': parseFloat(value.slice(1)) };
-        } else if (value.startsWith('<')) {
-            query[key] = { '<': parseFloat(value.slice(1)) };
+        const decodedValue = decodeURIComponent(value);
+        if (decodedValue.startsWith('!')) {
+            query[key] = { '!=': decodedValue.slice(1) };
+        } else if (decodedValue.startsWith('>=')) {
+            query[key] = { '>=': isNaN(parseFloat(decodedValue.slice(2))) ? decodedValue.slice(2) : parseFloat(decodedValue.slice(2)) };
+        } else if (decodedValue.startsWith('<=')) {
+            query[key] = { '<=': isNaN(parseFloat(decodedValue.slice(2))) ? decodedValue.slice(2) : parseFloat(decodedValue.slice(2)) };
+        } else if (decodedValue.startsWith('>')) {
+            query[key] = { '>': isNaN(parseFloat(decodedValue.slice(1))) ? decodedValue.slice(1) : parseFloat(decodedValue.slice(1)) };
+        } else if (decodedValue.startsWith('<')) {
+            query[key] = { '<': isNaN(parseFloat(decodedValue.slice(1))) ? decodedValue.slice(1) : parseFloat(decodedValue.slice(1)) };
         } else {
-            query[key] = { '=': value };
+            query[key] = { '=': decodedValue };
         }
     }
     return query;
@@ -41,13 +42,14 @@ async function processQuery(supabase, apiId, operation, queryParams) {
     return jsonData.filter((item) =>
         Object.entries(parsedQuery).every(([key, condition]) => {
             const [operator, value] = Object.entries(condition)[0];
+            const itemValue = item[key];
             switch (operator) {
-                case '=': return item[key] == value;
-                case '!=': return item[key] != value;
-                case '>': return item[key] > value;
-                case '<': return item[key] < value;
-                case '>=': return item[key] >= value;
-                case '<=': return item[key] <= value;
+                case '=': return itemValue == value;
+                case '!=': return itemValue != value;
+                case '>': return itemValue > value;
+                case '<': return itemValue < value;
+                case '>=': return itemValue >= value;
+                case '<=': return itemValue <= value;
                 default: return true;
             }
         })
@@ -82,7 +84,7 @@ async function logApiCall(supabase, tenantName, endpointName, apiId, request, re
 }
 
 // Main Lambda handler
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
 
     // Handle preflight requests
