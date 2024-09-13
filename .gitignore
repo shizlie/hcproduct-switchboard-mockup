@@ -3,3 +3,4 @@ node_modules/
 dev-work/
 website/favicon/
 website/logo*
+*.zip
