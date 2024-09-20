@@ -1,0 +1,36 @@
+# The Weirdest Project Journey Ever... Till Now! 🎢
+
+## The Accidental MVP
+
+You know how sometimes you set out to make a sandwich and end up with a meal? Well, that's kind of what happened here. I wanted to create a mockup for hcproduct.switchboard, nameed switchboard-mockup, but plot twist: I accidentally built an MVP which took 2 weeks! 🤦‍♂️
+
+## The Tech Rollercoaster 🎢
+
+### Round 1: The Classic Approach
+
+- **Tech Stack:** Node.js + Express + Supabase
+- **Target:** A machine deployment
+- **Status:** ✅ Working, but... Supabase does offer serveress function!
+
+### Round 2: The Serverless Seduction
+
+- **New Plan:** Supabase Edge Functions
+- **Runtime:** Deno (Hello, I have no idea! 📚)
+- **Experience:** Surprisingly fun, I still have no idea! 🎉
+- **Plot Twist:** Custom domain pricing 💸
+  - $20/month for a dev account
+  - Additional $10/month for a custom domain
+  - Me: "That's gonna be a no from me. WTH! Absurd" 🙅‍♂️
+
+### Round 3: Back to Old-school (My Old-school Free AWS)
+
+- **Final Tech:** Node.js on AWS Lambda
+- **Result:** MVP running at [switchboard.harrycorn.com](https://switchboard.harrycorn.com)
+
+## The Road Ahead 🛣️
+
+Next up on the to-do list: Add a caching mechanism for the Lambda function. Because who doesn't love a good cache? It's literrally money! 🍪💾
+
+## Conclusion
+
+Remember, folks: Sometimes the journey to create a simple mockup can lead you through a technological theme park. Embrace the ride, enjoy the views, and don't forget to scream on the sharp turns! 🎢🖥️🚀
