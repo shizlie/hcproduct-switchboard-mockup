@@ -33,7 +33,7 @@ Next up on the to-do list:
 
 - Add a caching mechanism for the Lambda function. Because who doesn't love a good cache? It's literrally money! 🍪💾
 - Set Ephemeral Storage /tmp (temporary storage of a lamdba initialized instance or executing environment) that stores the cache. Reference here: https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/
-- Set Reserved concurrency (allocated from the quota 1000 of a region of my account). Don't even think about Provisioned concurrency, which is pre-initialized instances. Reference here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html
+- Set Reserved concurrency (allocated from the quota 1000 of a region of my account). Don't even think about Provisioned concurrency, which is pre-initialized instances, which costs more. Reference here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html
   ![ Concurrency](https://docs.aws.amazon.com/images/lambda/latest/dg/images/concurrency-7-reserved-vs-provisioned.png)
 
 ## Conclusion

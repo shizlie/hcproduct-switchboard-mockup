@@ -3,6 +3,7 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>Switchboard- Mockup version</title>
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
@@ -15,6 +16,10 @@
 
     body {
       margin: 0;
+    }
+
+    img {
+      max-width: 100%;
     }
 
     #iau9 {
@@ -151,7 +156,7 @@
 
     #irz7b {
       justify-content: center;
-      margin-top: 10px;
+      margin: 20px 10rem;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
@@ -169,7 +174,11 @@
     }
 
     #iu707 {
-      flex: 0 1 auto;
+      justify-content: center;
+      margin: 10px 10px 10px 10px;
+      display: flex;
+      flex-direction: row;
+      max-width: 80rem;
     }
 
     #igwpj {
@@ -218,19 +227,6 @@
       font-weight: 300;
     }
 
-    #iu6bq {
-      color: #146c94;
-      padding: 10px;
-      font-family: Helvetica, sans-serif;
-      font-weight: 300;
-      text-decoration: underline;
-    }
-
-    #ivcjj {
-      flex-basis: 30%;
-      align-self: center;
-    }
-
     @media (max-width:992px) {
       .gjs-grid-row {
         flex-direction: column;
@@ -247,6 +243,7 @@
       }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
 </head>
 
 <body id="iau9">
@@ -254,29 +251,68 @@
     <div id="itjq" class="gjs-grid-column">
       <div id="iyd2" class="gjs-grid-row">
         <div id="iqjl" class="gjs-grid-column"><a id="iucmr" href="/" class="gjs-link-box"><img id="ilcg4a"
-              src="https://switchboard.harrycorn.com/logo.jpg" /></a></div>
-        <div id="igseo" class="gjs-grid-column">
-          <div id="im1qj" class="gjs-grid-row">
-            <div id="igwpj" class="gjs-grid-column">
-              <div id="iq7vl">This is MVP version. It works fine but there are a lot to work on.</div>
-            </div>
-            <div id="i99r9" class="gjs-grid-column"><a id="i5c4i" href="https://harrycorn.com/" class="gjs-link">Other
-                HC products</a></div>
-            <div class="gjs-grid-column" id="ivcjj"><a href="./blog.html" id="iu6bq" class="gjs-link">Dev
-                Diary</a></div>
+              src="https://switchboard.harrycorn.com/logo-line.jpg" /></a></div>
+        <div class="gjs-grid-column" id="igseo">
+          <div class="gjs-grid-row" id="im1qj">
+            <div class="gjs-grid-column" id="igwpj"></div>
+            <div class="gjs-grid-column" id="i99r9"></div>
           </div>
         </div>
-        <div id="iu707" class="gjs-grid-column"><a id="is1d7"
-            href="https://docs.google.com/document/d/1Bbw9DB-dKioxNqxBzzwDpULYxFLT6wyP4j12bpCqgxo/edit?usp=sharing"
-            class="gjs-link">Simple usage guide</a></div>
+        <div class="gjs-grid-column" id="iu707"></div>
       </div>
     </div>
   </div>
   <div id="irz7b" class="gjs-grid-row">
-    <!-- Replace "<Embed_URL>" with your actual Embed URL --><iframe frameborder="0" id="embeddedAppsmith"
-      src="https://app.appsmith.com/app/hcproduct-switchboard-mockup/login-66cc9bb8dc748d5f6bc54a6d?embed=true"
-      scrolling="yes" seamless="seamless"></iframe>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
+  <script>
+    const markdown = `
+    # The Weirdest Project Journey Ever... Till Now! 🎢
+
+## The Accidental MVP
+
+You know how sometimes you set out to make a sandwich and end up with a meal? Well, that's kind of what happened here. I wanted to create a mockup for hcproduct.switchboard, nameed switchboard-mockup, but plot twist: I accidentally built an MVP which took 2 weeks! 🤦‍♂️
+
+## The Tech Rollercoaster 🎢
+
+### Round 1: The Classic Approach
+
+- **Tech Stack:** Node.js + Express + Supabase
+- **Target:** A machine deployment
+- **Status:** ✅ Working, but... Supabase does offer serveress function!
+
+### Round 2: The Serverless Seduction
+
+- **New Plan:** Supabase Edge Functions
+- **Runtime:** Deno (Hello, I have no idea! 📚)
+- **Experience:** Surprisingly fun, I still have no idea! 🎉
+- **Plot Twist:** Custom domain pricing 💸
+  - $20/month for a dev account
+  - Additional $10/month for a custom domain
+  - Me: "That's gonna be a no from me. WTH! Absurd" 🙅‍♂️
+
+### Round 3: Back to Old-school (My Old-school Free AWS)
+
+- **Final Tech:** Node.js on AWS Lambda
+- **Result:** MVP running at [switchboard.harrycorn.com](https://switchboard.harrycorn.com)
+
+## The Road Ahead 🛣️
+
+Next up on the to-do list:
+
+- Add a caching mechanism for the Lambda function. Because who doesn't love a good cache? It's literrally money! 🍪💾
+- Set Ephemeral Storage /tmp (temporary storage of a lamdba initialized instance or executing environment) that stores the cache. Reference here: https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/
+- Set Reserved concurrency (allocated from the quota 1000 of a region of my account). Don't even think about Provisioned concurrency, which is pre-initialized instances, which costs more. Reference here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html
+  ![ Concurrency](https://docs.aws.amazon.com/images/lambda/latest/dg/images/concurrency-7-reserved-vs-provisioned.png)
+
+## Conclusion
+
+Remember, folks: Sometimes the journey to create a simple mockup can lead you through a technological theme park. Embrace the ride, enjoy the views, and don't forget to scream on the sharp turns! 🎢🖥️🚀
+
+    `;
+    const html = marked(markdown);
+    document.getElementById('irz7b').innerHTML = html;
+  </script>
 </body>
 
 </html>
