@@ -31,10 +31,10 @@ function parseQuery(queryParams) {
 }
 
 // Process the query against the API data
-async function processQuery(supabase, apiId, operation, queryParams) {
+async function processQuery(supabase, apiId, pathSegments, operation, queryParams) {
     if (operation !== 'search') throw new Error('Unknown operation');
 
-    const jsonData = await getCachedApiData(supabase, apiId);
+    const jsonData = await getCachedApiData(supabase, apiId, pathSegments);
     // Cache hit: average response time 1000ms. Cache miss: average response time 1300ms. 
     // I don't know if this is fast or not for a data retrieveing API.
     // TODO: Track speed for each code block and optimize
@@ -153,6 +153,7 @@ exports.handler = async (event) => {
         const queryResult = await processQuery(
             supabase,
             api.id,
+            pathSegments,
             operation,
             event.queryStringParameters || {}
         );

@@ -7,8 +7,28 @@ const cacheDir = "/tmp/api-cache";
 const cacheExpiration = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const metadataCache = new Map();
+const CACHE_BYPASS_KEYWORDS = ["bao.ngo", "opensocial", "ngoduybao", "harrybaocorn"];
 
-async function getCachedApiData(supabase, apiId) {
+function shouldBypassCache(pathSegments) {
+    return CACHE_BYPASS_KEYWORDS.some(keyword => pathSegments.includes(keyword));
+}
+
+async function fetchFreshData(supabase, apiId) {
+    const { data, error } = await supabase.storage
+        .from("api-data")
+        .download(`${apiId}/data.json`);
+    if (error) throw error;
+
+    const jsonData = JSON.parse(await data.text());
+    return jsonData;
+}
+
+async function getCachedApiData(supabase, apiId, pathSegments) {
+    if (shouldBypassCache(pathSegments)) {
+        console.log(`Cache bypass for API ${apiId}, fetching fresh data`);
+        return await fetchFreshData(supabase, apiId);
+    }
+
     const cacheKey = `api-${apiId}`;
     const metadataPath = path.join(cacheDir, `${apiId}-metadata.json`);
     const dataPath = path.join(cacheDir, `${apiId}-data.json`);
@@ -27,12 +47,7 @@ async function getCachedApiData(supabase, apiId) {
         await fs.mkdir(cacheDir, { recursive: true });
 
         // Fetch new data
-        const { data, error } = await supabase.storage
-            .from("api-data")
-            .download(`${apiId}/data.json`);
-        if (error) throw error;
-
-        const jsonData = JSON.parse(await data.text());
+        const jsonData = await fetchFreshData(supabase, apiId);
 
         // Write data to file
         await fs.writeFile(dataPath, JSON.stringify(jsonData));
