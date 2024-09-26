@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const { getCachedApiData } = require("./api-cache");
 
 // CORS headers for all responses
 const corsHeaders = {
@@ -33,10 +34,11 @@ function parseQuery(queryParams) {
 async function processQuery(supabase, apiId, operation, queryParams) {
     if (operation !== 'search') throw new Error('Unknown operation');
 
-    const { data, error } = await supabase.storage.from('api-data').download(`${apiId}/data.json`);
-    if (error) throw new Error('Failed to fetch API data');
+    const jsonData = await getCachedApiData(supabase, apiId);
+    // Cache hit: average response time 1000ms. Cache miss: average response time 1300ms. 
+    // I don't know if this is fast or not for a data retrieveing API.
+    // TODO: Track speed for each code block and optimize
 
-    const jsonData = JSON.parse(await data.text());
     const parsedQuery = parseQuery(queryParams);
 
     return jsonData.filter((item) =>
