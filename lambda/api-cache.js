@@ -24,10 +24,17 @@ async function fetchFreshData(supabase, apiId) {
 }
 
 async function getCachedApiData(supabase, apiId, pathSegments) {
-    if (shouldBypassCache(pathSegments)) {
-        console.log(`Cache bypass for API ${apiId}, fetching fresh data`);
-        return await fetchFreshData(supabase, apiId);
+    try {
+        if (shouldBypassCache(pathSegments)) {
+            console.log(`Cache bypass for API ${apiId}, fetching fresh data`);
+            return await fetchFreshData(supabase, apiId);
+        }
     }
+    catch (error) {
+        console.error(`Error fetching or bypass caching data for API ${apiId}:`, error);
+        throw new Error("Failed to fetch API data");
+    }
+
 
     const cacheKey = `api-${apiId}`;
     const metadataPath = path.join(cacheDir, `${apiId}-metadata.json`);
