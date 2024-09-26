@@ -31,10 +31,14 @@ You know how sometimes you set out to make a sandwich and end up with a meal? We
 
 Next up on the to-do list:
 
-- Add a caching mechanism for the Lambda function. Because who doesn't love a good cache? It's literrally money! 🍪💾
-- Set Ephemeral Storage /tmp (temporary storage of a lamdba initialized instance or executing environment) that stores the cache. Reference here: https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/
-- Set Reserved concurrency (allocated from the quota 1000 of a region of my account). Don't even think about Provisioned concurrency, which is pre-initialized instances, which costs more. Reference here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html
-  ![ Concurrency](https://docs.aws.amazon.com/images/lambda/latest/dg/images/concurrency-7-reserved-vs-provisioned.png)
+- [ ] Add a caching mechanism for the Lambda function. Because who doesn't love a good cache? It's literrally money! 🍪💾
+- [x] Set Ephemeral Storage /tmp (temporary storage of a lamdba initialized instance or executing environment) that stores the cache. Reference here: https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/
+- [x] Set Reserved concurrency (allocated from the quota 1000 of a region of my account). Don't even think about Provisioned concurrency, which is pre-initialized instances, which costs more.\
+       At the moment, for a query on a 100-record data file, cold start would takes avg 7s where as warm start would takes avg 1.2s -> 2s max. \
+       Reference here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html \
+       ![ Concurrency](https://docs.aws.amazon.com/images/lambda/latest/dg/images/concurrency-7-reserved-vs-provisioned.png)
+
+  - LOL! My newly-created account only has 10 Reserved concurrency
 
 ## Conclusion
 
