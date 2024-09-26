@@ -40,7 +40,7 @@ async function processQuery(supabase, apiId, pathSegments, operation, queryParam
     // TODO: Track speed for each code block and optimize
 
     const parsedQuery = parseQuery(queryParams);
-
+    console.log("Filter: " + new Date().toLocaleString());
     return jsonData.filter((item) =>
         Object.entries(parsedQuery).every(([key, condition]) => {
             const [operator, value] = Object.entries(condition)[0];
@@ -68,6 +68,7 @@ async function logApiCall(supabase, tenantName, endpointName, apiId, request, re
         request: {
             method: request.httpMethod,
             url: request.path,
+            queries: request.queryStringParameters,
             headers: request.headers,
         },
         response: {
@@ -88,6 +89,7 @@ async function logApiCall(supabase, tenantName, endpointName, apiId, request, re
 // Main Lambda handler
 exports.handler = async (event) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
+    console.log("Start: " + new Date().toLocaleString());
 
     // Handle preflight requests
     if (event.httpMethod === 'OPTIONS') {
@@ -125,6 +127,7 @@ exports.handler = async (event) => {
         }
 
         // Verify API details
+        console.log("Checking API: " + new Date().toLocaleString());
         const { data: api, error: apiError } = await supabase
             .from('apis')
             .select('*')
@@ -150,6 +153,7 @@ exports.handler = async (event) => {
         }
 
         // Process query and prepare response
+        console.log("Process query: " + new Date().toLocaleString());
         const queryResult = await processQuery(
             supabase,
             api.id,
@@ -165,8 +169,14 @@ exports.handler = async (event) => {
         };
 
         // Log API call
-        await logApiCall(supabase, tenantName, endpointName, api.id, event, response);
-
+        console.log("Log: " + new Date().toLocaleString());
+        // await logApiCall(supabase, tenantName, endpointName, api.id, event, response);
+        // Initiate logging without awaiting
+        logApiCall(supabase, tenantName, endpointName, api.id, event, response)
+            .catch((error) => {
+                console.error("Logging failed at: " + new Date().toLocaleString(), error);
+            });
+        console.log("Response: " + new Date().toLocaleString());
         return response;
     } catch (error) {
         console.error('Error processing request:', error);

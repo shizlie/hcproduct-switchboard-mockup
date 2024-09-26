@@ -14,16 +14,19 @@ function shouldBypassCache(pathSegments) {
 }
 
 async function fetchFreshData(supabase, apiId) {
+    console.log("Fetching: " + new Date().toLocaleString());
     const { data, error } = await supabase.storage
         .from("api-data")
         .download(`${apiId}/data.json`);
     if (error) throw error;
 
     const jsonData = JSON.parse(await data.text());
+    console.log("Done Fetching: " + new Date().toLocaleString());
     return jsonData;
 }
 
 async function getCachedApiData(supabase, apiId, pathSegments) {
+    console.log("Get Data: " + new Date().toLocaleString());
     try {
         if (shouldBypassCache(pathSegments)) {
             console.log(`Cache bypass for API ${apiId}, fetching fresh data`);
