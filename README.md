@@ -2,7 +2,7 @@
 
 ## The Accidental MVP
 
-You know how sometimes you set out to make a sandwich and end up with a meal? Well, that's kind of what happened here. I wanted to create a mockup for hcproduct.switchboard, nameed switchboard-mockup, but plot twist: I accidentally built an MVP which took 2 weeks! 🤦‍♂️
+You know how sometimes you set out to make a sandwich and end up with a meal? Well, that's kind of what happened here. I wanted to create a mockup for hcproduct.switchboard, nameed switchboard-mockup, but plot twist: I accidentally built an MVP which took ~~2 weeks~~ 4 weeks! 🤦‍♂️
 
 ## The Tech Rollercoaster 🎢
 
