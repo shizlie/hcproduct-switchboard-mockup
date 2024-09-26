@@ -40,6 +40,8 @@ Next up on the to-do list:
 
   - LOL! My newly-created account only has 10 Reserved concurrency
 
+- [ ] Add log analysis to analyze the pattern of product so I can monetize later. We can use Evidence at https://evidence.dev/
+
 ## Conclusion
 
 Remember, folks: Sometimes the journey to create a simple mockup can lead you through a technological theme park. Embrace the ride, enjoy the views, and don't forget to scream on the sharp turns! 🎢🖥️🚀
