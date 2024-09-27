@@ -4,7 +4,7 @@ const { getCachedApiData } = require("./api-cache");
 // CORS headers for all responses
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, accept, x-extract-attribute',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
 };
 
@@ -36,7 +36,7 @@ async function processQuery(supabase, apiId, pathSegments, operation, queryParam
 
     const jsonData = await getCachedApiData(supabase, apiId, pathSegments);
     // Cache hit: average response time 1000ms. Cache miss: average response time 1300ms. 
-    // I don't know if this is fast or not for a data retrieveing API.
+    // I don't know if this is fast or not for a data retrieving API.
     // TODO: Track speed for each code block and optimize
 
     const parsedQuery = parseQuery(queryParams);
@@ -117,7 +117,9 @@ exports.handler = async (event) => {
             };
         }
 
-        const apiKey = event.headers['x-api-key'] || event.headers['X-Api-Key'];
+        const headers = event.headers || {};
+        // While API headers are case-insensitive, we need to check carefully.
+        const apiKey = headers['x-api-key'] || headers['X-Api-Key'];
         if (!apiKey) {
             return {
                 statusCode: 401,
@@ -162,20 +164,71 @@ exports.handler = async (event) => {
             event.queryStringParameters || {}
         );
 
+        // Determine response format based on headers
+        let responseBody = queryResult;
+        let contentType = 'application/json';
+
+        // Extract headers (case-insensitive)
+        const acceptHeader = headers['Accept'] || headers['accept'];
+        const extractAttributeHeader = headers['X-Extract-Attribute'] || headers['x-extract-attribute'];
+
+        // Content Negotiation and Dynamic Attribute Extraction
+        if (acceptHeader && acceptHeader.includes('text/html')) {
+            contentType = 'text/html';
+
+            if (extractAttributeHeader) {
+                const attributeName = extractAttributeHeader.trim();
+
+                if (Array.isArray(queryResult) && queryResult.length > 0) {
+                    const firstObject = queryResult[0];
+                    if (Object.prototype.hasOwnProperty.call(firstObject, attributeName)) {
+                        responseBody = firstObject[attributeName];
+                    } else {
+                        // Attribute not found
+                        return {
+                            statusCode: 400, // Bad Request
+                            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ error: `Attribute '${attributeName}' not found in the response object.` }),
+                        };
+                    }
+                } else {
+                    // Empty array
+                    responseBody = '<!-- No content available -->';
+                }
+            } else {
+                // If no extraction requested, default to JSON
+                responseBody = JSON.stringify(queryResult);
+                contentType = 'application/json';
+            }
+        } else if (acceptHeader && acceptHeader.includes('application/json')) {
+            // Default behavior: JSON response
+            contentType = 'application/json';
+            responseBody = JSON.stringify(queryResult);
+        } else {
+            // Unsupported Accept header
+            return {
+                statusCode: 406, // Not Acceptable
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ error: "Unsupported 'Accept' header. Supported types: application/json, text/html." }),
+            };
+        }
+
+        // Prepare the final response
         const response = {
             statusCode: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            body: JSON.stringify(queryResult),
+            headers: { ...corsHeaders, 'Content-Type': contentType },
+            body: responseBody,
         };
 
         // Log API call
         console.log("Log: " + new Date().toLocaleString());
         // await logApiCall(supabase, tenantName, endpointName, api.id, event, response);
-        // Initiate logging without awaiting
+        // Initiate asynchronous logging (Fire-and-Forget)
         logApiCall(supabase, tenantName, endpointName, api.id, event, response)
             .catch((error) => {
                 console.error("Logging failed at: " + new Date().toLocaleString(), error);
             });
+
         console.log("Response: " + new Date().toLocaleString());
         return response;
     } catch (error) {
