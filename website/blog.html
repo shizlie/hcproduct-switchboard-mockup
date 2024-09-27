@@ -9,261 +9,29 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
   <link rel="manifest" href="favicon/site.webmanifest">
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-    }
-
-    img {
-      max-width: 100%;
-    }
-
-    #iau9 {
-      font-family: Arial, Helvetica, sans-serif;
-      background-image: linear-gradient(to bottom, rgba(25, 109, 148, 0.35) 0%, rgba(25, 109, 148, 0.19) 100%);
-      background-size: 100% 100vh;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      color: #475569;
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .gjs-grid-column.feature-item {
-      padding-top: 15px;
-      padding-right: 15px;
-      padding-bottom: 15px;
-      padding-left: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      min-width: 30%;
-    }
-
-    .gjs-grid-column.testimonial-item {
-      padding-top: 15px;
-      padding-right: 15px;
-      padding-bottom: 15px;
-      padding-left: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      min-width: 45%;
-      background-color: rgba(247, 247, 247, 0.23);
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
-      border-bottom-right-radius: 5px;
-      border-bottom-left-radius: 5px;
-      align-items: flex-start;
-      border-top-width: 1px;
-      border-right-width: 1px;
-      border-bottom-width: 1px;
-      border-left-width: 1px;
-      border-top-style: solid;
-      border-right-style: solid;
-      border-bottom-style: solid;
-      border-left-style: solid;
-      border-top-color: rgba(0, 0, 0, 0.06);
-      border-right-color: rgba(0, 0, 0, 0.06);
-      border-bottom-color: rgba(0, 0, 0, 0.06);
-      border-left-color: rgba(0, 0, 0, 0.06);
-    }
-
-    .gjs-link:hover {
-      color: rgb(36, 99, 235);
-      text-decoration: underline;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-    }
-
-    .gjs-link-box {
-      color: inherit;
-      display: inline-block;
-      vertical-align: top;
-      padding: 10px;
-      max-width: 100%;
-      text-decoration: none;
-    }
-
-    .gjs-grid-column {
-      flex: 1 1 0%;
-      padding: 5px 0;
-    }
-
-    .gjs-grid-row {
-      display: flex;
-      justify-content: flex-start;
-      align-items: stretch;
-      flex-direction: row;
-      min-height: auto;
-      padding: 10px 0;
-    }
-
-    #iqjl {
-      flex: 0 1 auto;
-    }
-
-    #iyd2 {
-      align-items: center;
-      color: #f6f2f1;
-      justify-content: space-between;
-      padding-top: 0px;
-      padding-bottom: 0px;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-      border-bottom-right-radius: 10px;
-      border-bottom-left-radius: 10px;
-      backdrop-filter: blur(13px);
-      box-shadow: 0px 2px 7px 0px rgba(0, 0, 0, 0.14);
-      background-color: #f6f2f1;
-      min-height: 10px;
-    }
-
-    #i6po {
-      justify-content: center;
-      position: sticky;
-      top: 15px;
-      padding-top: 0px;
-      padding-bottom: 0px;
-      padding-left: 20px;
-      padding-right: 20px;
-      flex-shrink: 0;
-    }
-
-    #itjq {
-      width: 100%;
-      max-width: 1200px;
-    }
-
-    #iucmr {
-      display: block;
-      padding-top: 0px;
-      padding-bottom: 0px;
-    }
-
-    #irz7b {
-      justify-content: center;
-      margin: 20px 10rem;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #ilcg4a {
-      color: black;
-      width: 100px;
-      height: auto;
-      border: none;
-    }
-
-    #igseo {
-      flex: 0 1 auto;
-    }
-
-    #iu707 {
-      justify-content: center;
-      margin: 10px 10px 10px 10px;
-      display: flex;
-      flex-direction: row;
-      max-width: 80rem;
-    }
-
-    #igwpj {
-      flex-basis: 50%;
-      align-self: center;
-    }
-
-    #i99r9 {
-      flex-basis: 30%;
-      align-self: center;
-    }
-
-    .gjs-link {
-      vertical-align: top;
-      max-width: 100%;
-      display: inline-block;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    #i5c4i {
-      color: #146c94;
-      padding: 10px;
-      font-family: Helvetica, sans-serif;
-      font-weight: 300;
-      text-decoration: underline;
-    }
-
-    #iq7vl {
-      padding: 10px;
-      color: #146c94;
-      font-family: Helvetica, sans-serif;
-    }
-
-    #embeddedAppsmith {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    #is1d7 {
-      color: #146c94;
-      padding: 10px;
-      font-family: Helvetica, sans-serif;
-      text-decoration: underline;
-      font-weight: 300;
-    }
-
-    @media (max-width:992px) {
-      .gjs-grid-row {
-        flex-direction: column;
-      }
-
-      #iyd2 {
-        flex-direction: row;
-      }
-    }
-
-    @media (max-width:992px) {
-      .gjs-grid-row {
-        flex-direction: column;
-      }
-    }
-  </style>
+  <link href="./tailwind-output.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
 </head>
 
-<body id="iau9">
-  <div id="i6po" class="gjs-grid-row">
-    <div id="itjq" class="gjs-grid-column">
-      <div id="iyd2" class="gjs-grid-row">
-        <div id="iqjl" class="gjs-grid-column"><a id="iucmr" href="/" class="gjs-link-box"><img id="ilcg4a"
-              src="https://switchboard.harrycorn.com/logo-line.jpg" /></a></div>
-        <div class="gjs-grid-column" id="igseo">
-          <div class="gjs-grid-row" id="im1qj">
-            <div class="gjs-grid-column" id="igwpj"></div>
-            <div class="gjs-grid-column" id="i99r9"></div>
-          </div>
-        </div>
-        <div class="gjs-grid-column" id="iu707"></div>
-      </div>
+<body>
+  <div class="hero py-5">
+    <div class="mx-2">
+      <a href="https://switchboard.harrycorn.com/">
+        <button class="btn">
+          <svg class="h-6 w-6 fill-current md:h-8 md:w-8" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24">
+            <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"></path>
+          </svg>
+          Go Back
+        </button>
+      </a>
     </div>
   </div>
-  <div id="irz7b" class="gjs-grid-row">
+  <div class="flex justify-center">
+    <div id="README" class="prose mx-2"></div>
   </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
   <script>
     const markdown = `
@@ -271,7 +39,7 @@
 
 ## The Accidental MVP
 
-You know how sometimes you set out to make a sandwich and end up with a meal? Well, that's kind of what happened here. I wanted to create a mockup for hcproduct.switchboard, nameed switchboard-mockup, but plot twist: I accidentally built an MVP which took 2 weeks! 🤦‍♂️
+You know how sometimes you set out to make a sandwich and end up with a meal? Well, that's kind of what happened here. I wanted to create a mockup for hcproduct.switchboard, nameed switchboard-mockup, but plot twist: I accidentally built an MVP which took ~~2 weeks~~ 4 weeks! 🤦‍♂️
 
 ## The Tech Rollercoaster 🎢
 
@@ -300,18 +68,25 @@ You know how sometimes you set out to make a sandwich and end up with a meal? We
 
 Next up on the to-do list:
 
-- Add a caching mechanism for the Lambda function. Because who doesn't love a good cache? It's literrally money! 🍪💾
-- Set Ephemeral Storage /tmp (temporary storage of a lamdba initialized instance or executing environment) that stores the cache. Reference here: https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/
-- Set Reserved concurrency (allocated from the quota 1000 of a region of my account). Don't even think about Provisioned concurrency, which is pre-initialized instances, which costs more. Reference here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html
-  ![ Concurrency](https://docs.aws.amazon.com/images/lambda/latest/dg/images/concurrency-7-reserved-vs-provisioned.png)
+- [ ] Add a caching mechanism for the Lambda function. Because who doesn't love a good cache? It's literrally money! 🍪💾
+- [x] Set Ephemeral Storage /tmp (temporary storage of a lamdba initialized instance or executing environment) that stores the cache. Reference here: https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/
+- [x] Set Reserved concurrency (allocated from the quota 1000 of a region of my account). Don't even think about Provisioned concurrency, which is pre-initialized instances, which costs more.\
+       At the moment, for a query on a 100-record data file, cold start would takes avg 7s where as warm start would takes avg 1.2s -> 2s max. \
+       Reference here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html \
+       ![ Concurrency](https://docs.aws.amazon.com/images/lambda/latest/dg/images/concurrency-7-reserved-vs-provisioned.png)
+
+  - LOL! My newly-created account only has 10 Reserved concurrency
+
+- [ ] Add log analysis to analyze the pattern of product so I can monetize later. We can use Evidence at https://evidence.dev/
 
 ## Conclusion
 
 Remember, folks: Sometimes the journey to create a simple mockup can lead you through a technological theme park. Embrace the ride, enjoy the views, and don't forget to scream on the sharp turns! 🎢🖥️🚀
 
+
     `;
     const html = marked(markdown);
-    document.getElementById('irz7b').innerHTML = html;
+    document.getElementById('README').innerHTML = html;
   </script>
 </body>
 
