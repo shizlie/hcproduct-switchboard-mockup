@@ -1,245 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="fantasy">
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Switchboard- Mockup version</title>
+	<title>Switchboard - Mockup version</title>
 	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
 	<link rel="manifest" href="favicon/site.webmanifest">
-	<style>
-		* {
-			box-sizing: border-box;
-		}
-
-		body {
-			margin: 0;
-		}
-
-		.gjs-link-box {
-			color: inherit;
-			display: inline-block;
-			vertical-align: top;
-			padding: 10px;
-			max-width: 100%;
-			text-decoration: none;
-		}
-
-		.gjs-grid-column {
-			flex: 1 1 0%;
-			padding: 5px 0;
-		}
-
-		.gjs-grid-row {
-			display: flex;
-			justify-content: flex-start;
-			align-items: stretch;
-			flex-direction: row;
-			min-height: auto;
-			padding: 10px 0;
-		}
-
-		.gjs-heading {
-			margin: 0;
-		}
-
-		.gjs-heading {
-			margin: 0;
-			color: rgba(29, 40, 55, 1);
-		}
-
-		.gjs-grid-column {
-			flex: 1 1 0%;
-			padding: 5px 0;
-		}
-
-		.gjs-grid-row {
-			display: flex;
-			justify-content: flex-start;
-			align-items: stretch;
-			flex-direction: row;
-			min-height: auto;
-			padding: 10px 0;
-		}
-
-		#iqjl {
-			flex: 0 1 auto;
-		}
-
-		.gjs-link-box {
-			color: inherit;
-			display: inline-block;
-			vertical-align: top;
-			padding: 10px;
-			max-width: 100%;
-			text-decoration: none;
-		}
-
-		#iyd2 {
-			align-items: center;
-			color: #f6f2f1;
-			justify-content: space-between;
-			padding-top: 0px;
-			padding-bottom: 0px;
-			border-top-left-radius: 10px;
-			border-top-right-radius: 10px;
-			border-bottom-right-radius: 10px;
-			border-bottom-left-radius: 10px;
-			backdrop-filter: blur(13px);
-			box-shadow: 0px 2px 7px 0px rgba(0, 0, 0, 0.14);
-			background-color: #f6f2f1;
-		}
-
-		#i6po {
-			justify-content: center;
-			position: sticky;
-			top: 15px;
-			padding-top: 0px;
-			padding-bottom: 0px;
-			padding-left: 20px;
-			padding-right: 20px;
-		}
-
-		#itjq {
-			width: 100%;
-			max-width: 1200px;
-		}
-
-		#iucmr {
-			display: block;
-			padding-top: 0px;
-			padding-bottom: 0px;
-		}
-
-		#irz7b {
-			justify-content: center;
-			padding-top: 80px;
-			padding-bottom: 80px;
-			padding-left: 20px;
-			padding-right: 20px;
-		}
-
-		#iycz3 {
-			align-items: center;
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
-		}
-
-		#irjua {
-			font-size: 3rem;
-			text-align: center;
-		}
-
-		#iau9 {
-			font-family: Arial, Helvetica, sans-serif;
-			background-image: linear-gradient(to bottom, rgba(25, 109, 148, 0.35) 0%, rgba(25, 109, 148, 0.19) 100%);
-			background-size: 100% 100vh;
-			background-repeat: no-repeat;
-			background-attachment: fixed;
-			color: #475569;
-			margin: 0;
-			padding: 0;
-			min-height: 100vh;
-		}
-
-		.gjs-grid-column.feature-item {
-			padding-top: 15px;
-			padding-right: 15px;
-			padding-bottom: 15px;
-			padding-left: 15px;
-			display: flex;
-			flex-direction: column;
-			gap: 15px;
-			min-width: 30%;
-		}
-
-		.gjs-grid-column.testimonial-item {
-			padding-top: 15px;
-			padding-right: 15px;
-			padding-bottom: 15px;
-			padding-left: 15px;
-			display: flex;
-			flex-direction: column;
-			gap: 15px;
-			min-width: 45%;
-			background-color: rgba(247, 247, 247, 0.23);
-			border-top-left-radius: 5px;
-			border-top-right-radius: 5px;
-			border-bottom-right-radius: 5px;
-			border-bottom-left-radius: 5px;
-			align-items: flex-start;
-			border-top-width: 1px;
-			border-right-width: 1px;
-			border-bottom-width: 1px;
-			border-left-width: 1px;
-			border-top-style: solid;
-			border-right-style: solid;
-			border-bottom-style: solid;
-			border-left-style: solid;
-			border-top-color: rgba(0, 0, 0, 0.06);
-			border-right-color: rgba(0, 0, 0, 0.06);
-			border-bottom-color: rgba(0, 0, 0, 0.06);
-			border-left-color: rgba(0, 0, 0, 0.06);
-		}
-
-		#ilcg4a {
-			color: black;
-			width: 100px;
-			height: auto;
-			border: none;
-		}
-
-		#i4jn1p {
-			color: #146c94;
-		}
-
-		#igseo {
-			flex: 0 1 auto;
-		}
-
-		#iu707 {
-			flex: 0 1 auto;
-		}
-
-		@media (max-width:992px) {
-			.gjs-grid-row {
-				flex-direction: column;
-			}
-
-			.gjs-grid-row {
-				flex-direction: column;
-			}
-
-			#iyd2 {
-				flex-direction: row;
-			}
-		}
-	</style>
+	<link href="./tailwind-output.css" rel="stylesheet">
 </head>
 
-<body id="iau9">
-	<div id="i6po" class="gjs-grid-row">
-		<div id="itjq" class="gjs-grid-column">
-			<div id="iyd2" class="gjs-grid-row">
-				<div id="iqjl" class="gjs-grid-column"><a id="iucmr" href="/" class="gjs-link-box"><img id="ilcg4a"
-							src="https://switchboard.harrycorn.com/logo-line.jpg" /></a></div>
-				<div class="gjs-grid-column" id="igseo">
-					<div class="gjs-grid-row" id="im1qj">
-						<div class="gjs-grid-column" id="igwpj"></div>
-						<div class="gjs-grid-column" id="i99r9"></div>
+<body>
+	<div class="hero py-5">
+		<div class="mx-2">
+			<a href="https://switchboard.harrycorn.com/">
+				<button class="btn">
+					<svg class="h-6 w-6 fill-current md:h-8 md:w-8" xmlns="http://www.w3.org/2000/svg" width="24"
+						height="24" viewBox="0 0 24 24">
+						<path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"></path>
+					</svg>
+					Go Back
+				</button>
+			</a>
+		</div>
+	</div>
+	<div class="flex flex-wrap flex-row justify-center">
+		<a href="https://harrycorn.com/">
+			<div class="bg-base-200 p-10 rounded-xl">
+				<div class="chat chat-start">
+					<div class="chat-image avatar">
+						<div class="w-20 rounded-full">
+							<img alt="Tailwind CSS chat bubble component" src="https://harrycorn.com/portrait.png" />
+						</div>
 					</div>
+					<div class="chat-header">
+						Bao Ngo
+						<time class="text-xs opacity-50"></time>
+					</div>
+					<div id="message" class="chat-bubble">404! I don't think you find what you need here.</div>
+					<div class="chat-footer opacity-50">Delivered</div>
 				</div>
-				<div class="gjs-grid-column" id="iu707"></div>
 			</div>
-		</div>
+		</a>
 	</div>
-	<div id="irz7b" class="gjs-grid-row">
-		<div id="iycz3" class="gjs-grid-column">
-			<h1 id="irjua" class="gjs-heading">Well...<span id="i4jn1p">nothing here</span></h1>
-		</div>
-	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const urlParams = new URLSearchParams(window.location.search);
+			const messageParam = urlParams.get('message');
+
+			if (messageParam) {
+				const h1Element = document.getElementById('message');
+				h1Element.innerHTML = `${messageParam}`;
+			}
+		});
+	</script>
 </body>
 
 </html>
