@@ -3,9 +3,10 @@ const { getCachedApiData } = require("./api-cache");
 
 // CORS headers for all responses
 const corsHeaders = {
+    // We also need to add this to Options in API Config -> Resources -> OPTIONS -> Integration Response -> Edit Default - Response
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, accept, x-extract-attribute',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'X-Amz-Security-Token,X-Amz-Date,Content-Type,Authorization,X-Api-Key,Apikey,X-Client-Info,Accept,X-Extract-Attribute',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
 };
 
 // Helper function to parse query parameters
