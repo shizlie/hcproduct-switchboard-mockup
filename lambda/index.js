@@ -205,12 +205,16 @@ exports.handler = async (event) => {
             // Default behavior: JSON response
             contentType = 'application/json';
             responseBody = JSON.stringify(queryResult);
+        } else if (!acceptHeader || acceptHeader.includes('*/*')) {
+            // Default behavior: JSON response
+            contentType = 'application/json';
+            responseBody = JSON.stringify(queryResult);
         } else {
             // Unsupported Accept header
             return {
                 statusCode: 406, // Not Acceptable
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ error: "Unsupported 'Accept' header. Supported types: application/json, text/html." }),
+                body: JSON.stringify({ error: `Unsupported 'Accept': ${acceptHeader} header. Supported types: application/json, text/html.` }),
             };
         }
 
