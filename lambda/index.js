@@ -1,6 +1,11 @@
 const { createClient } = require('@supabase/supabase-js');
 const { getCachedApiData } = require("./api-cache");
 
+const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 // CORS headers for all responses
 const corsHeaders = {
     // We also need to add this to Options in API Config -> Resources -> OPTIONS -> Integration Response -> Edit Default - Response
@@ -33,7 +38,13 @@ function parseQuery(queryParams) {
 
 // Process the query against the API data
 async function processQuery(supabase, apiId, pathSegments, operation, queryParams) {
-    if (operation !== 'search') throw new Error('Unknown operation');
+    if (operation == 'bin') {
+        return {
+            status: "success",
+            message: "Your request has been accepted and will be processed soon."
+        };
+    }
+    else if (operation !== 'search') throw new Error('Unknown operation');
 
     const jsonData = await getCachedApiData(supabase, apiId, pathSegments);
     // Cache hit: average response time 1000ms. Cache miss: average response time 1300ms. 
@@ -99,11 +110,6 @@ exports.handler = async (event) => {
     }
 
     try {
-        const supabase = createClient(
-            process.env.SUPABASE_URL,
-            process.env.SUPABASE_SERVICE_ROLE_KEY
-        );
-
         // Parse path parameters
         const pathSegments = (event.pathParameters?.proxy || event.path || event.resource || '')
             .split('/')
@@ -155,7 +161,28 @@ exports.handler = async (event) => {
                 body: JSON.stringify({ error: 'Method not allowed for this API' }),
             };
         }
+        if (operation == 'bin') {
+            // Prepare the final response
+            const response = {
+                statusCode: 200,
+                headers: { ...corsHeaders, 'Content-Type': "application/json" },
+                body: JSON.stringify({
+                    status: "success",
+                    message: "Your request has been accepted and will be processed soon."
+                }),
+            };
+            // Log API call
+            console.log("Log: " + new Date().toLocaleString());
+            // await logApiCall(supabase, tenantName, endpointName, api.id, event, response);
+            // Initiate asynchronous logging (Fire-and-Forget)
+            logApiCall(supabase, tenantName, endpointName, api.id, event, response)
+                .catch((error) => {
+                    console.error("Logging failed at: " + new Date().toLocaleString(), error);
+                });
 
+            console.log("Response: " + new Date().toLocaleString());
+            return response;
+        }
         // Process query and prepare response
         console.log("Process query: " + new Date().toLocaleString());
         const queryResult = await processQuery(
