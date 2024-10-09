@@ -71,6 +71,7 @@ async function logApiCall(supabase, tenantName, endpointName, apiId, request, re
             url: request.path,
             queries: request.queryStringParameters,
             headers: request.headers,
+            body: request.body,
         },
         response: {
             status: response.statusCode,
